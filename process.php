@@ -4,17 +4,41 @@
     <meta charset="UTF-8">
     <title>Word Frequency Results</title>
     <style>
-        /* Your CSS styles here. */
+        body {
+            background-image: url(bg1.jpg);
+            background-size: cover;
+        }
+        h1{
+            margin-top: 5rem;
+            text-align: center;
+            font-family: Verdana;
+        }
+        table {
+            width: 30%;
+            border-collapse: collapse;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+            margin-left: auto;
+            margin-right: auto;
+            background-color: rgba(255,255,255,.5);
+  
+        }
+        th, td, p {
+            border: 1px solid #808080;
+            padding: 8px;
+            text-align: center;
+            font-family: Verdana;
+        }
     </style>
+
 </head>
 <body>
-    <h1>Word Frequency Results</h1>
+    <h1>WORD FREQUENCY RESULTS</h1>
 
     <?php
     // Function to calculate word frequency while ignoring stop words.
-    function calculateWordFrequency($words, $stopWords) {
+    function wordFrequencyCalculator($words, $stopWords) {
         $wordFrequency = array_count_values($words);
-
+  
         // Remove stop words from the frequency array
         foreach ($stopWords as $stopWord) {
             unset($wordFrequency[$stopWord]);
@@ -24,8 +48,8 @@
     }
 
     // Function to sort word frequency based on user's choice.
-    function sortWordFrequency($wordFrequency, $sortOrder) {
-        if ($sortOrder === "asc") {
+    function sortWordFrequency($wordFrequency, $order) {
+        if ($order === "asc") {
             asort($wordFrequency);
         } else {
             arsort($wordFrequency);
@@ -34,18 +58,19 @@
     }
 
     // Function to limit the number of words displayed
-    function limitWordFrequency($wordFrequency, $limit) {
+    function limiter($wordFrequency, $limit) {
         return array_slice($wordFrequency, 0, $limit);
     }
 
     // Define stop words
-    $stopWords = ["the", "and", "in"]; // Common stop words to ignore
+    $stopWords = ["the", "and", "in", "a", "is", "its", "an", "for"]; // Common stop words to ignore
 
     // Check if the form is submitted
     if ($_SERVER["REQUEST_METHOD"] == "POST") {
         // Retrieve user input and perform input validation
-        $inputText = trim($_POST['text']);
-        $selectedSortOrder = $_POST['sort']; // 'asc' or 'desc'
+        
+        $inputText = strtolower(trim($_POST['text']));
+        $sortOrder = $_POST['sort']; // 'asc' or 'desc'
         $selectedLimit = (int)$_POST['limit']; // Number of words to display
 
         // Validate input
@@ -56,13 +81,13 @@
             $words = str_word_count($inputText, 1);
 
             // Calculate word frequency
-            $wordFrequency = calculateWordFrequency($words, $stopWords);
+            $wordFrequency = wordFrequencyCalculator($words, $stopWords);
 
             // Sort word frequency based on user's choice
-            $sortedWordFrequency = sortWordFrequency($wordFrequency, $selectedSortOrder);
+            $sortedWordFrequency = sortWordFrequency($wordFrequency, $sortOrder);
 
             // Limit the number of words to display
-            $limitedWordFrequency = limitWordFrequency($sortedWordFrequency, $selectedLimit);
+            $limitedWordFrequency = limiter($sortedWordFrequency, $selectedLimit);
 
             // Output the results in a styled table
             echo '<table>';
